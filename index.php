@@ -1,42 +1,58 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Mailing Addresses</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="main.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCv_UqEqxjXpGsPe8MQDn8tMLm9qcgHdUo&libraries=places"></script>
+    <style>
+        #body {
+            position: relative;
+            left: 25em;
+            border: 1px solid #000090;
+            background-color: #f0f0ff;
+            width: 25em;
+        }
+     </style>
+</head>
+<body id="body">
+    <h3>List of Addresses:</h3>
 <?php
-// Open connection to database
 require_once 'connector.php';
 
-$sql = "INSERT INTO Contacts (ContactID, FirstName, LastName, UpgradeEligible, Email)
-VALUES ('1', 'Test', 'Customer', 'Yes', 'john@example.com')";
-$sql = "INSERT INTO Contacts (ContactID, FirstName, LastName, UpgradeEligible, Email)
-VALUES ('2', 'Two', 'Client', 'No', 'tom@example.com')";
-$sql = "INSERT INTO Models (ModelID, ModelName, ModelSpecs, Upgrade)
-VALUES ('1', 'Model1', 'Upgraded', 'No')";
-$sql = "INSERT INTO Models (ModelID, ModelName, ModelSpecs, Upgrade)
-VALUES ('2', 'Model2', 'Upgraded', 'No')";
-$sql = "INSERT INTO Models (ModelID, ModelName, ModelSpecs, Upgrade)
-VALUES ('3', 'Model3', 'Standard', 'No')";
-$sql = "INSERT INTO Models (ModelID, ModelName, ModelSpecs, Upgrade)
-VALUES ('4', 'Model4', 'Standard', 'yes')";
-$sql = "INSERT INTO Slots (SlotID, Date, Time)
-VALUES ('1', '11/11/2018', '1:00 PM')";
-$sql = "INSERT INTO Slots (SlotID, Date, Time)
-VALUES ('2', '11/11/2018', '2:00 PM')";
+$stmt = $conn->prepare("INSERT INTO MyAddresses (mailingaddress, street, city, state, zip, country) VALUES (?,?,?,?,?,?)");
+$stmt->bind_param("ssssss", $mailingAddress, $street, $city, $state, $zip, $country);
+
+$mailingAddress = $_POST['mailingaddress'];
+$street = $_POST['street'];
+$city = $_POST['city'];
+$state = $_POST['state'];
+$zip = $_POST['zip'];
+$country = $_POST['country'];
+$stmt->execute();
 
 
-if (mysqli_multi_query($conn, $sql)) {
-    echo "";
-} else {
-    echo "Error: " . $sql . "<br>" . mysqli_error($conn);
-}
-$sql = "SELECT ContactID, FirstName, LastName, UpgradeEligible, Email FROM Contacts";
+
+$stmt->close();
+
+$sql = "SELECT mailingaddress, street, city, state, zip, country FROM MyAddresses";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
-    // output data of each row
     while($row = $result->fetch_assoc()) {
-        echo "contact info: " . $row["ContactID"]. "" . $row["FirstName"]. " " . $row["LastName"]. " " . $row["UpgradeEligible"].  " " . $row["Email"]. "<br>";
+        echo $row["mailingaddress"] . $row["street"]. "   " . $row["city"].  "   " . $row["state"].  "   " . $row["zip"].  "   " . $row["country"]."<br>" . "<br>";
     }
 } else {
     echo "0 results";
 }
-// Close connection to database
-require_once 'disconnector.php';
 ?>
+</table>
+</body>
+</html>
+<?php
+
